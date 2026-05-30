@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:20px;font-size:13px">
+<h2 style="color:#e94560">mobile bridge enumeration</h2>
+<pre id="out">Probing...</pre>
+<script>
+var out = document.getElementById('out');
+function log(m) { out.innerText += m + '\n'; }
+
+try {
+  log('typeof mobile: ' + typeof mobile);
+
+  // Enumerate all properties
+  var props = [];
+  for (var k in mobile) { props.push(k); }
+  log('for..in props: ' + (props.length ? props.join(', ') : 'none'));
+
+  // Try Object.getOwnPropertyNames
+  try {
+    var own = Object.getOwnPropertyNames(mobile);
+    log('getOwnPropertyNames: ' + own.join(', '));
+  } catch(e) { log('getOwnPropertyNames: ' + e); }
+
+  // Try common method names
+  var guesses = ['closeWebView','onBackPressed','openUrl','openDeepLink',
+    'getToken','getAuthToken','getUserId','getUserData','getUser',
+    'shareUrl','openBrowser','showToast','log','onError',
+    'requestPermission','getDeviceId','getInstallationId'];
+
+  guesses.forEach(function(m2) {
+    try {
+      var t = typeof mobile[m2];
+      if (t !== 'undefined') log('[+] mobile.' + m2 + ' = ' + t);
+    } catch(e) {}
+  });
+
+} catch(e) {
+  log('mobile not accessible: ' + e);
+}
+</script>
+</body>
+</html>
